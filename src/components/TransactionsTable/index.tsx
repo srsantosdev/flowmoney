@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
+import api from '../../services/api';
 
 import { Container, SimpleButton } from './styles';
 
 const TransactionsTable: React.FC = () => {
+  useEffect(() => {
+    async function loadData() {
+      const response = await api.get('/transactions');
+
+      console.log(response.data);
+    }
+
+    loadData();
+  }, []);
+
   return (
     <Container>
       <table>
