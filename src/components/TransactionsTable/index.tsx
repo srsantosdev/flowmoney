@@ -1,15 +1,26 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiTrash2 } from 'react-icons/fi';
 import api from '../../services/api';
 
 import { Container, SimpleButton } from './styles';
 
+interface Transaction {
+  id: string;
+  title: string;
+  amount: number;
+  category: string;
+  type: 'deposit' | 'withdraw';
+  created_at: string;
+}
+
 const TransactionsTable: React.FC = () => {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
   useEffect(() => {
     async function loadData() {
       const response = await api.get('/transactions');
 
-      console.log(response.data);
+      setTransactions(response.data.transactions);
     }
 
     loadData();
@@ -29,28 +40,28 @@ const TransactionsTable: React.FC = () => {
         </thead>
 
         <tbody>
-          <tr>
-            <td>Desenvolvimento de website</td>
-            <td className="deposit">R$12.000,00</td>
-            <td>Desenvolvimento</td>
-            <td>20/02/2021</td>
-            <td align="right">
-              <SimpleButton>
-                <FiTrash2 size={18} />
-              </SimpleButton>
-            </td>
-          </tr>
-          <tr>
-            <td>Desenvolvimento de website</td>
-            <td className="withdraw">- R$10.000,00</td>
-            <td>Desenvolvimento</td>
-            <td>20/02/2021</td>
-            <td align="right">
-              <SimpleButton>
-                <FiTrash2 size={18} />
-              </SimpleButton>
-            </td>
-          </tr>
+          {transactions.map(transaction => (
+            <tr key={transaction.id}>
+              <td>{transaction.title}</td>
+              <td className={transaction.type}>
+                {new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL',
+                }).format(transaction.amount)}
+              </td>
+              <td>{transaction.category}</td>
+              <td>
+                {new Intl.DateTimeFormat('pt-BR').format(
+                  new Date(transaction.created_at),
+                )}
+              </td>
+              <td align="right">
+                <SimpleButton>
+                  <FiTrash2 size={18} />
+                </SimpleButton>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </Container>
