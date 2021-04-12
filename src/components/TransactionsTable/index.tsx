@@ -1,30 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FiTrash2 } from 'react-icons/fi';
-import api from '../../services/api';
+import { useTransactions } from '../../hooks/useTransactions';
 
 import { Container, SimpleButton } from './styles';
 
-interface Transaction {
-  id: string;
-  title: string;
-  amount: number;
-  category: string;
-  type: 'deposit' | 'withdraw';
-  created_at: string;
-}
-
 const TransactionsTable: React.FC = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-
-  useEffect(() => {
-    async function loadData() {
-      const response = await api.get('/transactions');
-
-      setTransactions(response.data.transactions);
-    }
-
-    loadData();
-  }, []);
+  const { transactions } = useTransactions();
 
   return (
     <Container>
